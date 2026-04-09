@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import ChatbotPopup from "@/components/ChatbotPopup";
 import BackToTop from "@/components/BackToTop";
 import Index from "./pages/Index";
 import About from "./pages/About";
@@ -46,6 +47,13 @@ const App = () => (
                 </main>
                 <Footer />
                 <WhatsAppButton />
+                <ChatbotPopup
+                  title="IIRA Assistant"
+                  botName="IIRA Support"
+                  placeholder="Ask about programs, admissions, fees..."
+                  color="#E8651A"
+                  position="bottom-right"
+                />
                 <BackToTop />
               </div>
             } />
