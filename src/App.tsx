@@ -28,7 +28,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/admin" element={<Admin />} />
-            <Route path="*" element={
+            <Route path="/" element={
               <div className="min-h-screen flex flex-col">
                 <Navbar />
                 <main className="flex-1">
