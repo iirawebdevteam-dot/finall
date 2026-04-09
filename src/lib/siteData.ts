@@ -17,6 +17,11 @@ export interface SiteData {
     cta1Text: string;
     cta2Text: string;
   };
+  home: {
+    image: string;
+    imageDescription: string;
+    trustedBy: string;
+  };
   sports: Array<{
     id: string;
     name: string;
@@ -46,6 +51,7 @@ export interface SiteData {
     title: string;
     date: string;
     description: string;
+    year?: string;
   }>;
   faculty: Array<{
     id: string;
@@ -61,10 +67,14 @@ export interface SiteData {
     whatsapp: string;
     email: string;
     hours: string;
+    mapLink?: string;
   };
   admissions: {
     open: boolean;
     year: string;
+    title?: string;
+    description?: string;
+    link?: string;
   };
   achievements: Array<{
     id: string;
@@ -144,6 +154,11 @@ const defaultData: SiteData = {
     cta1Text: "EXPLORE COURSES",
     cta2Text: "ENROLL NOW",
   },
+  home: {
+    image: "",
+    imageDescription: "",
+    trustedBy: "Trusted by 1,500+ students and 1,000+ parents — building a strong foundation since 2009.",
+  },
   stats: [
     { value: "2", label: "Acres Campus", suffix: "+" },
     { value: "10", label: "Sports Programs", suffix: "+" },
@@ -192,6 +207,9 @@ const defaultData: SiteData = {
   admissions: {
     open: true,
     year: "2025-26",
+    title: "Admissions Open for Nursery – Class X",
+    description: "Secure your child's future with a world-class education at IIRA International School, Vadodara. Limited seats available — apply today.",
+    link: "https://",
   },
   achievements: [
     { id: "a1", title: "Gujarat State Cricket Championship", student: "Arjun Mehta", sport: "Cricket", medal: "gold", year: "2024", description: "Under-16 state level championship winner" },

@@ -298,6 +298,7 @@ function FileUpload({ fileUrl, fieldLabel, onUpload, onRemove }: any) {
 // ─────────────────────────────────────────────────────────────
 function HomeManager({ data, onSave }: any) {
   const [hero, setHero] = useState(data.hero);
+  const [home, setHome] = useState(data.home || { image: "", imageDescription: "", trustedBy: "Trusted by 1,500+ students and 1,000+ parents — building a strong foundation since 2009." });
   const [stats, setStats] = useState(data.stats);
 
   const updateStat = (i: number, f: string, v: string) => {
@@ -306,12 +307,9 @@ function HomeManager({ data, onSave }: any) {
 
   return (
     <div className="space-y-6">
-      <div className="grid sm:grid-cols-2 gap-4">
-        <AdminInput label="Headline" value={hero.headline} onChange={(v: string) => setHero({ ...hero, headline: v })} />
-        <AdminInput label="Tagline / Subtext" value={hero.subtext} onChange={(v: string) => setHero({ ...hero, subtext: v })} />
-      </div>
+      {/* 4 STAT BLOCKS */}
       <div>
-        <h3 className="text-sm border-b border-white/10 pb-2 mb-3">4 Stat Blocks</h3>
+        <h3 className="text-sm font-semibold border-b border-white/10 pb-2 mb-4">Home Section - 4 Stat Blocks</h3>
         <div className="grid sm:grid-cols-4 gap-4">
           {stats.slice(0, 4).map((s: any, i: number) => (
             <div key={i} className="p-3 bg-white/5 rounded space-y-2">
@@ -322,7 +320,27 @@ function HomeManager({ data, onSave }: any) {
           ))}
         </div>
       </div>
-      <button onClick={() => onSave({ hero, stats })} className="btn-primary-cta !py-2 !px-4 text-xs">Save Home Section</button>
+
+      {/* IMAGE UPLOAD WITH DESCRIPTION */}
+      <div className="border-t border-white/10 pt-6">
+        <h3 className="text-sm font-semibold mb-4">Home Image & Description</h3>
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div>
+            <ImageUpload src={home.image} fieldLabel="Upload Home Image" onUpload={(v:string) => setHome({...home, image:v})} onRemove={() => setHome({...home, image:''})} />
+          </div>
+          <div>
+            <AdminTextarea label="Image Description" value={home.imageDescription} onChange={(v: string) => setHome({...home, imageDescription:v})} placeholder="Describe the image and what it shows" />
+          </div>
+        </div>
+      </div>
+
+      {/* TRUSTED BY TEXT */}
+      <div className="border-t border-white/10 pt-6">
+        <h3 className="text-sm font-semibold mb-4">Trusted By Text</h3>
+        <AdminTextarea label="Edit this text" value={home.trustedBy} onChange={(v: string) => setHome({...home, trustedBy:v})} placeholder="e.g., Trusted by 1,500+ students and 1,000+ parents — building a strong foundation since 2009." />
+      </div>
+
+      <button onClick={() => onSave({ hero, home, stats })} className="btn-primary-cta !py-2 !px-4 text-xs w-full sm:w-auto">Save Home Section</button>
     </div>
   );
 }
@@ -331,26 +349,36 @@ function HomeManager({ data, onSave }: any) {
 // 2. WHY CHOOSE US
 // ─────────────────────────────────────────────────────────────
 function WhyChooseUsManager({ data, onSave }: any) {
-  const [sec, setSec] = useState(data.whyChooseUs || { description: "", features: [] });
+  const [sec, setSec] = useState(data.whyChooseUs || { description: "The IIRA International School Vadodara is about the spirit, morals and ethics of India. A revolutionary, futuristic and tranquil institution nurtures an ideal educational environment. A blend of tradition and modernity, this institution imparts a natural impetus towards excellence in all spheres of life.", features: [] });
 
-  const add = () => setSec({ ...sec, features: [...sec.features, { id: Date.now().toString(), title: "New Feature" }] });
+  const add = () => setSec({ ...sec, features: [...sec.features, { id: Date.now().toString(), title: "Experienced & Dedicated Faculty" }] });
   const updateF = (i: number, v: string) => { const f = [...sec.features]; f[i].title = v; setSec({ ...sec, features: f }); };
   const removeF = (i: number) => { setSec({ ...sec, features: sec.features.filter((_: any, idx: number) => idx !== i) }); };
 
   return (
-    <div className="space-y-4">
-      <AdminTextarea label="Description" value={sec.description} onChange={(v: string) => setSec({ ...sec, description: v })} />
-      <div className="space-y-2">
-        {sec.features.map((f: any, i: number) => (
-          <div key={f.id} className="flex items-center gap-2">
-            <AdminInput value={f.title} onChange={(v: string) => updateF(i, v)} />
-            <button onClick={() => removeF(i)} className="text-red-400 mt-5 bg-white/5 p-2 rounded hover:bg-white/10"><Trash2 size={16}/></button>
-          </div>
-        ))}
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-sm font-semibold mb-3">Main Description</h3>
+        <div className="bg-white/5 rounded-lg border border-white/10 p-4">
+          <AdminTextarea label="Why Choose Us Description" value={sec.description} onChange={(v: string) => setSec({ ...sec, description: v })} rows={4} />
+        </div>
       </div>
+
+      <div>
+        <h3 className="text-sm font-semibold mb-3">Key Benefits & Features</h3>
+        <div className="space-y-2">
+          {sec.features.map((f: any, i: number) => (
+            <div key={f.id} className="flex items-center gap-2 p-3 bg-white/5 rounded-lg border border-white/10">
+              <input type="text" value={f.title} onChange={(e) => updateF(i, e.target.value)} className="flex-1 bg-transparent outline-none text-sm text-white" />
+              <button onClick={() => removeF(i)} className="text-red-400 hover:text-red-300"><Trash2 size={16}/></button>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <div className="flex gap-2 pt-2">
-        <button onClick={add} className="bg-white/5 px-4 py-2 rounded text-xs flex items-center gap-1"><Plus size={14}/> Add Feature</button>
-        <button onClick={() => onSave({ whyChooseUs: sec })} className="btn-primary-cta !py-2 !px-4 text-xs">Save Why Choose Us</button>
+        <button onClick={add} className="bg-white/5 px-4 py-2 rounded text-xs flex items-center gap-1 hover:bg-white/10 transition-all"><Plus size={14}/> Add Benefit</button>
+        <button onClick={() => onSave({ whyChooseUs: sec })} className="btn-primary-cta !py-2 !px-4 text-xs">Save Section</button>
       </div>
     </div>
   );
@@ -361,22 +389,53 @@ function WhyChooseUsManager({ data, onSave }: any) {
 // ─────────────────────────────────────────────────────────────
 function SpecialtiesManager({ data, onSave }: any) {
   const [items, setItems] = useState(data.specialties || []);
-  const add = () => setItems([...items, { id: Date.now().toString(), icon: "🌟", title: "New", description: "Desc" }]);
+  const commonIcons = [
+    "🎓", "📚", "🏆", "⭐", "💡", "🚀", "🌟", "✨", "🎯", "🏅",
+    "🔬", "🎨", "🎭", "🎵", "⚽", "🏃", "🧘", "💪", "🤝", "🌍"
+  ];
+
+  const add = () => setItems([...items, { id: Date.now().toString(), icon: "🌟", title: "CBSE Curriculum", description: "Comprehensive CBSE-aligned curriculum with conceptual and experiential learning." }]);
   const update = (i: number, f: string, v: string) => { const nw = [...items]; nw[i][f] = v; setItems(nw); };
   const remove = (i: number) => setItems(items.filter((_: any, idx: number) => idx !== i));
 
   return (
     <div className="space-y-4">
       {items.map((it: any, i: number) => (
-        <div key={it.id} className="p-4 bg-white/5 rounded grid grid-cols-12 gap-3 relative pr-10">
-          <div className="col-span-2"><AdminInput label="Emoji Icon" value={it.icon} onChange={(v: string) => update(i, 'icon', v)} /></div>
-          <div className="col-span-4"><AdminInput label="Title" value={it.title} onChange={(v: string) => update(i, 'title', v)} /></div>
-          <div className="col-span-6"><AdminInput label="Description" value={it.description} onChange={(v: string) => update(i, 'description', v)} /></div>
-          <button onClick={() => remove(i)} className="absolute right-3 top-1/2 -translate-y-1/2 text-red-400 hover:text-red-300"><Trash2 size={16}/></button>
+        <div key={it.id} className="p-4 bg-white/5 rounded-lg border border-white/10 space-y-3 relative pr-10">
+          <div className="grid sm:grid-cols-3 gap-3">
+            {/* Icon Selector */}
+            <div>
+              <label className="block text-xs font-body text-white/50 mb-2">Pick Icon</label>
+              <div className="grid grid-cols-5 gap-2 mb-2">
+                {commonIcons.map(emoji => (
+                  <button key={emoji} onClick={() => update(i, 'icon', emoji)} className={`p-2 rounded text-lg transition-all ${it.icon === emoji ? 'bg-primary' : 'bg-white/5 hover:bg-white/10'}`}>
+                    {emoji}
+                  </button>
+                ))}
+              </div>
+              <div className="flex items-center gap-2 mt-2">
+                <span className="text-2xl">{it.icon}</span>
+                <input type="text" value={it.icon} onChange={(e) => update(i, 'icon', e.target.value)} className="flex-1 bg-white/5 rounded px-2 py-1 text-xs outline-none" placeholder="Or paste custom emoji" />
+              </div>
+            </div>
+
+            {/* Title */}
+            <div>
+              <AdminInput label="Specialty Title" value={it.title} onChange={(v: string) => update(i, 'title', v)} placeholder="e.g., CBSE Curriculum" />
+            </div>
+
+            {/* Remove Button Position */}
+            <div className="relative">
+              <button onClick={() => remove(i)} className="absolute right-0 top-0 text-red-400 hover:text-red-300 p-2"><Trash2 size={16}/></button>
+            </div>
+          </div>
+
+          {/* Description */}
+          <AdminTextarea label="Specialty Description" value={it.description} onChange={(v: string) => update(i, 'description', v)} rows={2} placeholder="Describe this specialty..." />
         </div>
       ))}
       <div className="flex gap-2">
-        <button onClick={add} className="bg-white/5 px-4 py-2 rounded text-xs flex items-center gap-1"><Plus size={14}/> Add Specialty</button>
+        <button onClick={add} className="bg-white/5 px-4 py-2 rounded text-xs flex items-center gap-1 hover:bg-white/10 transition-all"><Plus size={14}/> Add Specialty</button>
         <button onClick={() => onSave({ specialties: items })} className="btn-primary-cta !py-2 !px-4 text-xs">Save Specialties</button>
       </div>
     </div>
@@ -388,24 +447,57 @@ function SpecialtiesManager({ data, onSave }: any) {
 // ─────────────────────────────────────────────────────────────
 function AchievementsManager({ data, onSave }: any) {
   const [items, setItems] = useState(data.achievements || []);
-  const add = () => setItems([...items, { id: Date.now().toString(), year: "2024", title: "New", description: "Desc", medal: "gold", student: "Name", sport: "Sport" }]);
+  const medals = [
+    { value: "gold", label: "🥇 Gold", color: "#FFD700" },
+    { value: "silver", label: "🥈 Silver", color: "#C0C0C0" },
+    { value: "bronze", label: "🥉 Bronze", color: "#CD7F32" },
+  ];
+
+  const add = () => setItems([...items, { id: Date.now().toString(), year: new Date().getFullYear().toString(), title: "New Achievement", description: "Description", medal: "gold", student: "Name", sport: "Sport" }]);
   const update = (i: number, f: string, v: string) => { const nw = [...items]; nw[i][f] = v; setItems(nw); };
   const remove = (i: number) => setItems(items.filter((_: any, idx: number) => idx !== i));
 
   return (
     <div className="space-y-4">
       {items.map((it: any, i: number) => (
-        <div key={it.id} className="p-4 bg-white/5 rounded grid grid-cols-12 gap-3 relative pr-10">
-          <div className="col-span-2"><AdminInput label="Year" value={it.year} onChange={(v: string) => update(i, 'year', v)} /></div>
-          <div className="col-span-2"><AdminSelect label="Icon" value={it.medal} onChange={(v: string) => update(i, 'medal', v)} options={[{value:'gold', label:'🥇 Gold'}, {value:'silver',label:'🥈 Silver'}, {value:'bronze',label:'🥉 Bronze'}]} /></div>
-          <div className="col-span-4"><AdminInput label="Title" value={it.title} onChange={(v: string) => update(i, 'title', v)} /></div>
-          <div className="col-span-4"><AdminInput label="Description" value={it.description} onChange={(v: string) => update(i, 'description', v)} /></div>
-          <button onClick={() => remove(i)} className="absolute right-3 top-1/2 -translate-y-1/2 text-red-400 hover:text-red-300"><Trash2 size={16}/></button>
+        <div key={it.id} className="p-4 bg-white/5 rounded-lg border border-white/10 space-y-3 relative pr-10">
+          <div className="grid sm:grid-cols-4 gap-3">
+            {/* Year */}
+            <div>
+              <AdminInput label="Year" type="number" value={it.year} onChange={(v: string) => update(i, 'year', v)} />
+            </div>
+
+            {/* Medal Icon */}
+            <div>
+              <label className="block text-xs font-body text-white/50 mb-1">Medal</label>
+              <select value={it.medal} onChange={(e) => update(i, 'medal', e.target.value)} className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white font-body text-sm outline-none">
+                {medals.map(m => <option key={m.value} value={m.value} className="bg-background text-foreground">{m.label}</option>)}
+              </select>
+            </div>
+
+            {/* Title */}
+            <div>
+              <AdminInput label="Achievement Title" value={it.title} onChange={(v: string) => update(i, 'title', v)} />
+            </div>
+
+            {/* Student Name */}
+            <div>
+              <AdminInput label="Student Name" value={it.student} onChange={(v: string) => update(i, 'student', v)} />
+            </div>
+          </div>
+
+          {/* Category & Description */}
+          <div className="grid sm:grid-cols-2 gap-3">
+            <AdminInput label="Sport/Category" value={it.sport} onChange={(v: string) => update(i, 'sport', v)} />
+            <AdminInput label="Achievement Details" value={it.description} onChange={(v: string) => update(i, 'description', v)} />
+          </div>
+
+          <button onClick={() => remove(i)} className="absolute right-3 top-4 text-red-400 hover:text-red-300 transition-colors"><Trash2 size={16}/></button>
         </div>
       ))}
       <div className="flex gap-2">
-        <button onClick={add} className="bg-white/5 px-4 py-2 rounded text-xs flex items-center gap-1"><Plus size={14}/> Add Achievement</button>
-        <button onClick={() => onSave({ achievements: items })} className="btn-primary-cta !py-2 !px-4 text-xs">Save Achivements</button>
+        <button onClick={add} className="bg-white/5 px-4 py-2 rounded text-xs flex items-center gap-1 hover:bg-white/10 transition-all"><Plus size={14}/> Add Achievement</button>
+        <button onClick={() => onSave({ achievements: items })} className="btn-primary-cta !py-2 !px-4 text-xs">Save Achievements</button>
       </div>
     </div>
   );
@@ -416,22 +508,45 @@ function AchievementsManager({ data, onSave }: any) {
 // ─────────────────────────────────────────────────────────────
 function EventsManager({ data, onSave }: any) {
   const [events, setEvents] = useState(data.events || []);
-  const add = () => setEvents([...events, { id: `e-${Date.now()}`, title: "New Event", date: new Date().toISOString().split("T")[0], description: "Desc" }]);
+  const currentYear = new Date().getFullYear();
+  const add = () => setEvents([...events, { id: `e-${Date.now()}`, title: "New Event", date: new Date().toISOString().split("T")[0], description: "Desc", year: "current" }]);
   const update = (i: number, f: string, v: string) => { const nw = [...events]; nw[i][f] = v; setEvents(nw); };
   const remove = (i: number) => setEvents(events.filter((_: any, idx: number) => idx !== i));
 
   return (
     <div className="space-y-4">
       {events.map((ev: any, i: number) => (
-        <div key={ev.id} className="p-4 bg-white/5 rounded grid sm:grid-cols-4 gap-3 relative pr-10">
-          <div className="col-span-1"><AdminInput type="date" label="Date" value={ev.date} onChange={(v: string) => update(i, 'date', v)} /></div>
-          <div className="col-span-1"><AdminInput label="Title" value={ev.title} onChange={(v: string) => update(i, 'title', v)} /></div>
-          <div className="col-span-2"><AdminInput label="Description" value={ev.description} onChange={(v: string) => update(i, 'description', v)} /></div>
-          <button onClick={() => remove(i)} className="absolute right-3 top-1/2 -translate-y-1/2 text-red-400 hover:text-red-300"><Trash2 size={16}/></button>
+        <div key={ev.id} className="p-4 bg-white/5 rounded-lg border border-white/10 space-y-3 relative pr-10">
+          <div className="grid sm:grid-cols-3 gap-3">
+            {/* Year Selector */}
+            <div>
+              <label className="block text-xs font-body text-white/50 mb-1">Year</label>
+              <select value={ev.year || "current"} onChange={(e) => update(i, 'year', e.target.value)} className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white font-body text-sm outline-none">
+                <option value="current">Current Year ({currentYear})</option>
+                <option value="last">Last Year ({currentYear - 1})</option>
+              </select>
+            </div>
+
+            {/* Date Picker (Calendar) */}
+            <div>
+              <label className="block text-xs font-body text-white/50 mb-1">Date (Calendar)</label>
+              <input type="date" value={ev.date} onChange={(e) => update(i, 'date', e.target.value)} className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white font-body text-sm outline-none focus:ring-1 focus:ring-primary" />
+            </div>
+
+            {/* Title */}
+            <div>
+              <AdminInput label="Event Title" value={ev.title} onChange={(v: string) => update(i, 'title', v)} />
+            </div>
+          </div>
+
+          {/* Description */}
+          <AdminTextarea label="Event Description" value={ev.description} onChange={(v: string) => update(i, 'description', v)} />
+
+          <button onClick={() => remove(i)} className="absolute right-3 top-4 text-red-400 hover:text-red-300 transition-colors"><Trash2 size={16}/></button>
         </div>
       ))}
       <div className="flex gap-2">
-        <button onClick={add} className="bg-white/5 px-4 py-2 rounded text-xs flex items-center gap-1"><Plus size={14}/> Add Event</button>
+        <button onClick={add} className="bg-white/5 px-4 py-2 rounded text-xs flex items-center gap-1 hover:bg-white/10 transition-all"><Plus size={14}/> Add Event</button>
         <button onClick={() => onSave({ events })} className="btn-primary-cta !py-2 !px-4 text-xs">Save Events</button>
       </div>
     </div>
@@ -575,23 +690,49 @@ function TestimonialsManager({ data, onSave }: any) {
 // ─────────────────────────────────────────────────────────────
 function BlogsManager({ data, onSave }: any) {
   const [items, setItems] = useState(data.blogs || []);
-  const add = () => setItems([...items, { id: Date.now().toString(), type: "Management", title: "Reflections", description: "...", link: "https://" }]);
+  const add = () => setItems([...items, { id: Date.now().toString(), type: "Management", title: "Blog Title", description: "Blog description here", link: "https://" }]);
   const update = (i: number, f: string, v: string) => { const nw = [...items]; nw[i][f] = v; setItems(nw); };
   const remove = (i: number) => setItems(items.filter((_: any, idx: number) => idx !== i));
+
+  const blogTypes = [
+    { value: "Mentor", label: "👨‍🏫 Mentor" },
+    { value: "Educator", label: "📚 Educator" },
+    { value: "Student", label: "🎓 Student" },
+    { value: "Management", label: "👔 Management" },
+  ];
 
   return (
     <div className="space-y-4">
       {items.map((it: any, i: number) => (
-        <div key={it.id} className="p-4 bg-white/5 rounded grid sm:grid-cols-4 gap-3 relative pr-10">
-          <div className="col-span-1"><AdminSelect label="Type" value={it.type} onChange={(v:string)=>update(i,'type',v)} options={[{value:'Mentor',label:'Mentor'},{value:'Educator',label:'Educator'},{value:'Student',label:'Student'},{value:'Management',label:'Management'}]}/></div>
-          <div className="col-span-1"><AdminInput label="Title" value={it.title} onChange={(v: string) => update(i, 'title', v)} /></div>
-          <div className="col-span-1"><AdminInput label="Link" value={it.link} onChange={(v: string) => update(i, 'link', v)} /></div>
-          <div className="col-span-4"><AdminTextarea label="Description" value={it.description} onChange={(v: string) => update(i, 'description', v)} /></div>
-          <button onClick={() => remove(i)} className="absolute right-3 top-4 text-red-400 hover:text-red-300"><Trash2 size={16}/></button>
+        <div key={it.id} className="p-4 bg-white/5 rounded-lg border border-white/10 space-y-3 relative pr-10">
+          <div className="grid sm:grid-cols-3 gap-3">
+            {/* Type Selector */}
+            <div>
+              <label className="block text-xs font-body text-white/50 mb-1">Blog Type</label>
+              <select value={it.type} onChange={(e)=>update(i,'type',e.target.value)} className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white font-body text-sm outline-none">
+                {blogTypes.map(bt => <option key={bt.value} value={bt.value} className="bg-background text-foreground">{bt.label}</option>)}
+              </select>
+            </div>
+
+            {/* Title */}
+            <div>
+              <AdminInput label="Blog Title" value={it.title} onChange={(v: string) => update(i, 'title', v)} />
+            </div>
+
+            {/* Link */}
+            <div>
+              <AdminInput label="Blog Link" value={it.link} onChange={(v: string) => update(i, 'link', v)} placeholder="https://..." />
+            </div>
+          </div>
+
+          {/* Description */}
+          <AdminTextarea label="Blog Description / Excerpt" value={it.description} onChange={(v: string) => update(i, 'description', v)} rows={3} />
+
+          <button onClick={() => remove(i)} className="absolute right-3 top-4 text-red-400 hover:text-red-300 transition-colors"><Trash2 size={16}/></button>
         </div>
       ))}
       <div className="flex gap-2">
-        <button onClick={add} className="bg-white/5 px-4 py-2 rounded text-xs flex items-center gap-1"><Plus size={14}/> Add Blog</button>
+        <button onClick={add} className="bg-white/5 px-4 py-2 rounded text-xs flex items-center gap-1 hover:bg-white/10 transition-all"><Plus size={14}/> Add Blog</button>
         <button onClick={() => onSave({ blogs: items })} className="btn-primary-cta !py-2 !px-4 text-xs">Save Blogs</button>
       </div>
     </div>
@@ -602,23 +743,36 @@ function BlogsManager({ data, onSave }: any) {
 // 11. ADMISSIONS
 // ─────────────────────────────────────────────────────────────
 function AdmissionsManager({ data, onSave }: any) {
-  const [adm, setAdm] = useState(data.admissions || { year: "2025-26", open: true, title: "Apply Now", description: "Join us", link: "https://" });
+  const [adm, setAdm] = useState(data.admissions || { year: "2025-26", open: true, title: "Admissions Open for Nursery – Class X", description: "Secure your child's future with a world-class education at IIRA International School, Vadodara. Limited seats available — apply today.", link: "https://" });
 
   return (
-    <div className="space-y-4 grid grid-cols-2 gap-4">
-      <div className="col-span-2 sm:col-span-1"><AdminInput label="Year Label" value={adm.year} onChange={(v: string) => setAdm({...adm, year:v})} /></div>
-      <div className="col-span-2 sm:col-span-1">
-        <label className="block text-xs font-body text-white/50 mb-1">Status</label>
-        <label className="flex items-center gap-2 cursor-pointer mt-2 text-sm">
-          <input type="checkbox" checked={adm.open} onChange={e => setAdm({...adm, open:e.target.checked})} className="rounded" /> Admissions Open
-        </label>
+    <div className="space-y-6">
+      <div className="bg-white/5 rounded-lg border border-white/10 p-4">
+        <h3 className="text-sm font-semibold mb-4">Admissions Configuration</h3>
+        
+        <div className="grid sm:grid-cols-2 gap-4 mb-4">
+          <AdminInput label="Academic Year" value={adm.year} onChange={(v: string) => setAdm({...adm, year:v})} placeholder="e.g., 2026-27" />
+          <div>
+            <label className="block text-xs font-body text-white/50 mb-2">Status</label>
+            <label className="flex items-center gap-2 cursor-pointer bg-white/5 p-3 rounded-lg border border-white/10">
+              <input type="checkbox" checked={adm.open} onChange={e => setAdm({...adm, open:e.target.checked})} className="rounded" /> 
+              <span className="text-sm">Admissions Open</span>
+            </label>
+          </div>
+        </div>
+
+        <AdminInput label="Main Title" value={adm.title} onChange={(v: string) => setAdm({...adm, title:v})} placeholder="Admissions Open for Nursery – Class X" />
+        
+        <div className="mt-4">
+          <AdminTextarea label="Description" value={adm.description} onChange={(v: string) => setAdm({...adm, description:v})} rows={3} />
+        </div>
+
+        <div className="mt-4">
+          <AdminInput label="Apply Now Button Link" value={adm.link} onChange={(v: string) => setAdm({...adm, link:v})} placeholder="https://forms.example.com/admissions" />
+        </div>
       </div>
-      <div className="col-span-2 sm:col-span-1"><AdminInput label="Title" value={adm.title} onChange={(v: string) => setAdm({...adm, title:v})} /></div>
-      <div className="col-span-2 sm:col-span-1"><AdminInput label="Apply Link" value={adm.link} onChange={(v: string) => setAdm({...adm, link:v})} /></div>
-      <div className="col-span-2"><AdminTextarea label="Description" value={adm.description} onChange={(v: string) => setAdm({...adm, description:v})} /></div>
-      <div className="col-span-2">
-        <button onClick={() => onSave({ admissions: adm })} className="btn-primary-cta !py-2 !px-4 text-xs">Save Admissions Info</button>
-      </div>
+
+      <button onClick={() => onSave({ admissions: adm })} className="btn-primary-cta !py-2 !px-4 text-xs w-full">Save Admissions</button>
     </div>
   );
 }
@@ -684,16 +838,47 @@ function ContactManager({ data, onSave }: any) {
   const update = (f: string, v: string) => setC({ ...c, [f]: v });
 
   return (
-    <div className="grid sm:grid-cols-2 gap-4">
-      <div className="col-span-2"><AdminTextarea label="Address" value={c.address} onChange={(v: string) => update('address', v)} /></div>
-      <AdminInput label="Phone" value={c.phone} onChange={(v: string) => update('phone', v)} />
-      <AdminInput label="WhatsApp" value={c.whatsapp} onChange={(v: string) => update('whatsapp', v)} />
-      <AdminInput label="Notification Email" value={c.email} onChange={(v: string) => update('email', v)} />
-      <AdminInput label="Office Hours" value={c.hours} onChange={(v: string) => update('hours', v)} />
-      <div className="col-span-2"><AdminInput label="Map Link URL" value={c.mapLink} onChange={(v: string) => update('mapLink', v)} /></div>
-      <div className="col-span-2">
-        <button onClick={() => onSave({ contact: c })} className="btn-primary-cta !py-2 !px-4 text-xs mt-2">Save Contact Info</button>
+    <div className="space-y-6">
+      {/* 4 PREDEFINED CONTACT BLOCKS */}
+      <div>
+        <h3 className="text-sm font-semibold mb-4">Contact Information - 4 Sections</h3>
+        <div className="grid sm:grid-cols-2 gap-4">
+          {/* Address Block */}
+          <div className="bg-white/5 rounded-lg border border-white/10 p-4">
+            <label className="block text-xs font-semibold text-primary mb-2 uppercase">📍 Address</label>
+            <textarea value={c.address} onChange={(e) => update('address', e.target.value)} rows={3} className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white font-body text-sm focus:ring-1 focus:ring-primary outline-none resize-y" />
+          </div>
+
+          {/* Phone Block */}
+          <div className="bg-white/5 rounded-lg border border-white/10 p-4">
+            <label className="block text-xs font-semibold text-primary mb-2 uppercase">☎️ Phone</label>
+            <input type="text" value={c.phone} onChange={(e) => update('phone', e.target.value)} className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white font-body text-sm focus:ring-1 focus:ring-primary outline-none" placeholder="+91 XXXX XXXXXX" />
+          </div>
+
+          {/* Email Block */}
+          <div className="bg-white/5 rounded-lg border border-white/10 p-4">
+            <label className="block text-xs font-semibold text-primary mb-2 uppercase">✉️ Email</label>
+            <input type="email" value={c.email} onChange={(e) => update('email', e.target.value)} className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white font-body text-sm focus:ring-1 focus:ring-primary outline-none" placeholder="info@iira.co.in" />
+          </div>
+
+          {/* Office Hours Block */}
+          <div className="bg-white/5 rounded-lg border border-white/10 p-4">
+            <label className="block text-xs font-semibold text-primary mb-2 uppercase">🕐 Office Hours</label>
+            <input type="text" value={c.hours} onChange={(e) => update('hours', e.target.value)} className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white font-body text-sm focus:ring-1 focus:ring-primary outline-none" placeholder="Mon–Sat: 8:00 AM – 4:00 PM" />
+          </div>
+        </div>
       </div>
+
+      {/* MESSAGING CONFIGURATION */}
+      <div className="border-t border-white/10 pt-6">
+        <h3 className="text-sm font-semibold mb-4">Messaging & Map</h3>
+        <div className="grid sm:grid-cols-2 gap-4">
+          <AdminInput label="WhatsApp Number (For Messages)" value={c.whatsapp} onChange={(v: string) => update('whatsapp', v)} placeholder="+91 XXXX XXXXXX" />
+          <AdminInput label="Map Location Link" value={c.mapLink || ''} onChange={(v: string) => update('mapLink', v)} placeholder="https://maps.google.com/?q=..." />
+        </div>
+      </div>
+
+      <button onClick={() => onSave({ contact: c })} className="btn-primary-cta !py-2 !px-4 text-xs w-full">Save Contact Info</button>
     </div>
   );
 }
@@ -703,22 +888,43 @@ function ContactManager({ data, onSave }: any) {
 // ─────────────────────────────────────────────────────────────
 function SocialMediaManager({ data, onSave }: any) {
   const [items, setItems] = useState(data.socialMedia || []);
+  const platforms = ["Facebook", "Instagram", "Twitter", "LinkedIn", "YouTube"];
+  const platformEmojis = {
+    Facebook: "👍",
+    Instagram: "📷",
+    Twitter: "𝕏",
+    LinkedIn: "💼",
+    YouTube: "▶️",
+  };
+
   const add = () => setItems([...items, { id: Date.now().toString(), platform: "Instagram", url: "https://" }]);
   const update = (i: number, f: string, v: string) => { const nw = [...items]; nw[i][f] = v; setItems(nw); };
   const remove = (i: number) => setItems(items.filter((_: any, idx: number) => idx !== i));
 
   return (
     <div className="space-y-4">
+      <div className="bg-white/5 rounded-lg border border-white/10 p-4 mb-4">
+        <h3 className="text-sm font-semibold mb-3">Predefined Social Media Platforms</h3>
+        <p className="text-xs text-white/50 mb-3">Choose from available platforms to display on your website</p>
+      </div>
+
       {items.map((it: any, i: number) => (
-        <div key={it.id} className="p-4 bg-white/5 rounded grid sm:grid-cols-3 gap-3 relative pr-10">
-          <div className="col-span-1"><AdminSelect label="Platform" value={it.platform} onChange={(v:string)=>update(i,'platform',v)} options={['Facebook','Instagram','Twitter','LinkedIn','YouTube'].map(p=>({value:p,label:p}))}/></div>
-          <div className="col-span-2"><AdminInput label="URL" value={it.url} onChange={(v: string) => update(i, 'url', v)} /></div>
-          <button onClick={() => remove(i)} className="absolute right-3 top-1/2 -translate-y-1/2 text-red-400 hover:text-red-300"><Trash2 size={16}/></button>
+        <div key={it.id} className="p-4 bg-white/5 rounded-lg border border-white/10 grid sm:grid-cols-3 gap-3 relative pr-10">
+          <div className="col-span-1">
+            <label className="block text-xs font-body text-white/50 mb-1">Platform</label>
+            <select value={it.platform} onChange={(e)=>update(i,'platform',e.target.value)} className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white font-body text-sm outline-none">
+              {platforms.map(p => <option key={p} value={p} className="bg-background text-foreground">{platformEmojis[p as keyof typeof platformEmojis]} {p}</option>)}
+            </select>
+          </div>
+          <div className="col-span-2">
+            <AdminInput label="Profile URL" value={it.url} onChange={(v: string) => update(i, 'url', v)} placeholder="https://..." />
+          </div>
+          <button onClick={() => remove(i)} className="absolute right-3 top-1/2 -translate-y-1/2 text-red-400 hover:text-red-300 transition-colors"><Trash2 size={16}/></button>
         </div>
       ))}
       <div className="flex gap-2">
-        <button onClick={add} className="bg-white/5 px-4 py-2 rounded text-xs flex items-center gap-1"><Plus size={14}/> Add Link</button>
-        <button onClick={() => onSave({ socialMedia: items })} className="btn-primary-cta !py-2 !px-4 text-xs">Save Socials</button>
+        <button onClick={add} className="bg-white/5 px-4 py-2 rounded text-xs flex items-center gap-1 hover:bg-white/10 transition-all"><Plus size={14}/> Add Social Link</button>
+        <button onClick={() => onSave({ socialMedia: items })} className="btn-primary-cta !py-2 !px-4 text-xs">Save Social Media</button>
       </div>
     </div>
   );
