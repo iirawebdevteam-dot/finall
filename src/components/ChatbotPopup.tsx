@@ -134,68 +134,80 @@ export default function ChatbotPopup({
       {!isOpen && (
         <button
           onClick={() => handleToggle(true)}
-          className={`fixed ${positionClass} z-50 flex items-center justify-center w-14 h-14 rounded-full text-white shadow-lg hover:scale-110 active:scale-95 transition-transform duration-200`}
+          className={`fixed ${positionClass} z-50 flex items-center justify-center w-14 h-14 rounded-full text-white shadow-xl hover:shadow-2xl active:scale-95 transition-all duration-200 hover:scale-110 group`}
           style={{
             backgroundColor: color,
-            boxShadow: `0 10px 25px ${color}40`,
+            boxShadow: `0 10px 30px ${color}60, 0 0 60px ${color}20`,
           }}
           aria-label="Open chat"
         >
-          <MessageCircle size={26} />
+          <MessageCircle size={26} className="group-hover:rotate-12 transition-transform" />
         </button>
       )}
 
       {/* Chat Window */}
       {isOpen && (
         <div
-          className={`fixed ${positionClass} z-50 w-96 max-w-[calc(100vw-24px)] h-[500px] max-h-[calc(100vh-100px)] rounded-xl shadow-2xl bg-white flex flex-col overflow-hidden border border-white/20`}
+          className={`fixed ${positionClass} z-50 w-96 max-w-[calc(100vw-24px)] h-[500px] max-h-[calc(100vh-100px)] rounded-2xl shadow-2xl bg-white flex flex-col overflow-hidden border-2`}
+          style={{ borderColor: color + "30" }}
         >
           {/* Header */}
           <div
-            className="px-4 py-3 text-white flex items-center justify-between"
-            style={{ backgroundColor: color }}
+            className="px-4 py-3 text-white flex items-center justify-between shadow-lg"
+            style={{
+              background: `linear-gradient(135deg, ${color} 0%, ${color}dd 100%)`,
+            }}
           >
             <div className="flex items-center gap-2">
-              <MessageCircle size={20} />
+              <div className="p-1.5 rounded-lg bg-white/20">
+                <MessageCircle size={20} />
+              </div>
               <div>
-                <h3 className="font-semibold text-sm leading-none">{title}</h3>
-                <p className="text-xs opacity-90">{botName}</p>
+                <h3 className="font-bold text-sm leading-none">{title}</h3>
+                <p className="text-xs opacity-80">{botName}</p>
               </div>
             </div>
             <Button
               variant="ghost"
               size="icon"
               onClick={() => handleToggle(false)}
-              className="text-white hover:bg-white/20 h-8 w-8"
+              className="text-white hover:bg-white/20 h-8 w-8 transition-colors"
             >
               <X size={18} />
             </Button>
           </div>
 
           {/* Messages Area */}
-          <ScrollArea className="flex-1 p-4">
+          <ScrollArea className="flex-1 p-4 bg-gradient-to-b from-white to-slate-50">
             <div className="space-y-3 pr-4">
               {messages.map((msg) => (
                 <div
                   key={msg.id}
                   className={`flex ${
                     msg.type === "user" ? "justify-end" : "justify-start"
-                  }`}
+                  } animate-in fade-in slide-in-from-bottom-2 duration-300`}
                 >
                   <div
-                    className={`max-w-xs px-4 py-2 rounded-lg text-sm ${
+                    className={`max-w-xs px-4 py-2 rounded-lg text-sm font-medium ${
                       msg.type === "user"
-                        ? "bg-slate-800 text-white rounded-br-none"
-                        : "bg-slate-100 text-slate-900 rounded-bl-none"
+                        ? "rounded-br-none text-white shadow-lg shadow-orange-400/40"
+                        : "rounded-bl-none text-slate-900 shadow-md shadow-slate-200/60"
                     }`}
+                    style={
+                      msg.type === "user"
+                        ? {
+                            background: `linear-gradient(135deg, ${color} 0%, ${color}dd 100%)`,
+                          }
+                        : { backgroundColor: "#f1f5f9" }
+                    }
                   >
-                    <p className="break-words whitespace-pre-wrap">
+                    <p className="break-words whitespace-pre-wrap leading-relaxed">
                       {msg.message}
                     </p>
                     <p
-                      className={`text-xs mt-1 ${
+                      className={`text-xs mt-1 font-normal ${
                         msg.type === "user"
-                          ? "text-slate-400"
+                          ? "text-white/70"
                           : "text-slate-500"
                       }`}
                     >
@@ -210,22 +222,25 @@ export default function ChatbotPopup({
 
               {/* Loading Indicator */}
               {isLoading && (
-                <div className="flex justify-start">
-                  <div className="bg-slate-100 text-slate-900 px-4 py-2 rounded-lg rounded-bl-none">
-                    <div className="flex gap-1">
+                <div className="flex justify-start animate-in fade-in slide-in-from-bottom-2 duration-300">
+                  <div
+                    className="px-4 py-2 rounded-lg rounded-bl-none shadow-md shadow-slate-200/60"
+                    style={{ backgroundColor: "#f1f5f9" }}
+                  >
+                    <div className="flex gap-2">
                       <div
-                        className="w-2 h-2 rounded-full animate-bounce"
+                        className="w-2.5 h-2.5 rounded-full animate-bounce"
                         style={{ backgroundColor: color }}
                       />
                       <div
-                        className="w-2 h-2 rounded-full animate-bounce"
+                        className="w-2.5 h-2.5 rounded-full animate-bounce"
                         style={{
                           backgroundColor: color,
                           animationDelay: "0.1s",
                         }}
                       />
                       <div
-                        className="w-2 h-2 rounded-full animate-bounce"
+                        className="w-2.5 h-2.5 rounded-full animate-bounce"
                         style={{
                           backgroundColor: color,
                           animationDelay: "0.2s",
@@ -241,7 +256,7 @@ export default function ChatbotPopup({
           </ScrollArea>
 
           {/* Input Area */}
-          <div className="border-t border-slate-200 p-3 bg-slate-50 flex gap-2">
+          <div className="border-t-2 p-3 bg-gradient-to-r from-white to-slate-50 flex gap-2" style={{ borderColor: color + "15" }}>
             <Input
               type="text"
               placeholder={placeholder}
@@ -249,13 +264,17 @@ export default function ChatbotPopup({
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
               disabled={isLoading}
-              className="flex-1 border-slate-300 text-sm"
+              className="flex-1 border-2 text-sm font-medium focus:outline-none"
+              style={{
+                borderColor: color + "30",
+                backgroundColor: "#f8fafc",
+              }}
             />
             <Button
               onClick={handleSendMessage}
               disabled={!inputValue.trim() || isLoading}
               size="icon"
-              className="text-white"
+              className="text-white font-bold shadow-lg hover:shadow-xl transition-shadow disabled:opacity-50"
               style={{ backgroundColor: color }}
             >
               <Send size={18} />
