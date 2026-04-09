@@ -255,6 +255,31 @@ const defaultData: SiteData = {
 };
 
 const STORAGE_KEY = "siteData";
+let isLovableCloudEnabled = false;
+
+// Initialize Lovable Cloud check on first load
+if (typeof window !== "undefined") {
+  const scripts = document.getElementsByTagName("script");
+  for (let i = 0; i < scripts.length; i++) {
+    if (scripts[i].src && scripts[i].src.includes("lovable")) {
+      isLovableCloudEnabled = true;
+      break;
+    }
+  }
+}
+
+async function syncFromCloud(): Promise<SiteData | null> {
+  // Only attempt cloud sync if Lovable Cloud is configured
+  if (!process.env.REACT_APP_LOVABLE_API_KEY) return null;
+  
+  try {
+    const { fetchSiteDataFromCloud } = await import("./lovableCloud");
+    return await fetchSiteDataFromCloud();
+  } catch (error) {
+    console.warn("Cloud sync failed, using local storage:", error);
+    return null;
+  }
+}
 
 export function getSiteData(): SiteData {
   try {
@@ -267,9 +292,34 @@ export function getSiteData(): SiteData {
   return defaultData;
 }
 
-export function updateSiteData(partial: Partial<SiteData>) {
+export async function getSiteDataAsync(): Promise<SiteData> {
+  // Try Lovable Cloud first
+  const cloudData = await syncFromCloud();
+  if (cloudData) {
+    return cloudData;
+  }
+  // Fallback to localStorage
+  return getSiteData();
+}
+
+export async function updateSiteData(partial: Partial<SiteData>): Promise<SiteData> {
   const current = getSiteData();
   const updated = { ...current, ...partial };
+  
+  // Try to save to Lovable Cloud
+  if (process.env.REACT_APP_LOVABLE_API_KEY) {
+    try {
+      const { saveSiteDataToCloud } = await import("./lovableCloud");
+      const cloudSuccess = await saveSiteDataToCloud(updated);
+      if (cloudSuccess) {
+        console.log("Data synced to Lovable Cloud");
+      }
+    } catch (error) {
+      console.warn("Failed to sync to Lovable Cloud, saving locally:", error);
+    }
+  }
+  
+  // Always save to localStorage as backup
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
     if (typeof window !== "undefined") {
