@@ -178,7 +178,7 @@ export default function ChatbotPopup({
           </div>
 
           {/* Messages Area */}
-          <ScrollArea className="flex-1 p-4 bg-gradient-to-b from-white to-slate-50">
+          <ScrollArea className="flex-1 p-4 bg-gradient-to-b from-orange-50 to-orange-100/30">
             <div className="space-y-3 pr-4">
               {messages.map((msg) => (
                 <div
@@ -191,14 +191,17 @@ export default function ChatbotPopup({
                     className={`max-w-xs px-4 py-2 rounded-lg text-sm font-medium ${
                       msg.type === "user"
                         ? "rounded-br-none text-white shadow-lg shadow-orange-400/40"
-                        : "rounded-bl-none text-slate-900 shadow-md shadow-slate-200/60"
+                        : "rounded-bl-none text-slate-900 shadow-lg shadow-orange-300/30"
                     }`}
                     style={
                       msg.type === "user"
                         ? {
                             background: `linear-gradient(135deg, ${color} 0%, ${color}dd 100%)`,
                           }
-                        : { backgroundColor: "#f1f5f9" }
+                        : {
+                            background: `linear-gradient(135deg, ${color}20 0%, ${color}15 100%)`,
+                            borderLeft: `3px solid ${color}`,
+                          }
                     }
                   >
                     <p className="break-words whitespace-pre-wrap leading-relaxed">
@@ -208,7 +211,7 @@ export default function ChatbotPopup({
                       className={`text-xs mt-1 font-normal ${
                         msg.type === "user"
                           ? "text-white/70"
-                          : "text-slate-500"
+                          : "text-slate-600"
                       }`}
                     >
                       {msg.timestamp.toLocaleTimeString([], {
@@ -224,8 +227,11 @@ export default function ChatbotPopup({
               {isLoading && (
                 <div className="flex justify-start animate-in fade-in slide-in-from-bottom-2 duration-300">
                   <div
-                    className="px-4 py-2 rounded-lg rounded-bl-none shadow-md shadow-slate-200/60"
-                    style={{ backgroundColor: "#f1f5f9" }}
+                    className="px-4 py-2 rounded-lg rounded-bl-none shadow-lg"
+                    style={{
+                      background: `linear-gradient(135deg, ${color}20 0%, ${color}15 100%)`,
+                      borderLeft: `3px solid ${color}`,
+                    }}
                   >
                     <div className="flex gap-2">
                       <div
@@ -256,7 +262,7 @@ export default function ChatbotPopup({
           </ScrollArea>
 
           {/* Input Area */}
-          <div className="border-t-2 p-3 bg-gradient-to-r from-white to-slate-50 flex gap-2" style={{ borderColor: color + "15" }}>
+          <div className="border-t-2 p-3 bg-gradient-to-r from-orange-50 to-orange-100 flex gap-2" style={{ borderColor: color + "30" }}>
             <Input
               type="text"
               placeholder={placeholder}
@@ -266,8 +272,8 @@ export default function ChatbotPopup({
               disabled={isLoading}
               className="flex-1 border-2 text-sm font-medium focus:outline-none"
               style={{
-                borderColor: color + "30",
-                backgroundColor: "#f8fafc",
+                borderColor: color + "40",
+                backgroundColor: "#fffbf7",
               }}
             />
             <Button
